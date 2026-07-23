@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\Services\BookAvailabilityServiceInterface;
+use App\Contracts\Services\BorrowLimitServiceInterface;
 use App\Models\BookCopy;
 use App\Models\Loan;
 use App\Models\Member;
@@ -10,6 +12,16 @@ use Illuminate\Http\Request;
 
 class LoanController extends Controller
 {
+    protected BorrowLimitServiceInterface $borrowLimitService;
+    protected BookAvailabilityServiceInterface $availabilityService;
+
+    public function __construct(
+        BorrowLimitServiceInterface $borrowLimitService,
+        BookAvailabilityServiceInterface $availabilityService
+    ) {
+        $this->borrowLimitService = $borrowLimitService;
+        $this->availabilityService = $availabilityService;
+    }
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
