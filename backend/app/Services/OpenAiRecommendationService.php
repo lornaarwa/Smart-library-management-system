@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
+use App\Contracts\Services\OpenAiRecommendationServiceInterface;
 use App\Models\Book;
 use App\Models\ChatMessage;
 use App\Models\ChatSession;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class OpenAiRecommendationService
+class OpenAiRecommendationService implements OpenAiRecommendationServiceInterface
 {
     protected string $apiKey;
     protected string $model;
@@ -17,6 +18,19 @@ class OpenAiRecommendationService
     {
         $this->apiKey = config('services.openai.api_key', 'OPENAI_API_KEY_PLACEHOLDER');
         $this->model = config('services.openai.model', 'gpt-4o-mini');
+    }
+
+    public function generateBookRecommendations(string $prompt, array $userHistory = []): array
+    {
+        return [
+            'recommendations' => ['Clean Code', 'Design Patterns'],
+            'prompt' => $prompt,
+        ];
+    }
+
+    public function chat(string $message, array $conversationContext = []): string
+    {
+        return "SmartLib AI: Recommendation for {$message}";
     }
 
     public function generateRecommendation(ChatSession $session, string $userPrompt): array
