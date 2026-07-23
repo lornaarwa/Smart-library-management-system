@@ -2,26 +2,43 @@
 
 namespace App\Services;
 
+use App\Contracts\Services\BookAvailabilityServiceInterface;
 use App\Models\Book;
 use App\Models\BookCopy;
 
-class BookAvailabilityService
+class BookAvailabilityService implements BookAvailabilityServiceInterface
 {
-    public function evaluateBookStatus(Book $book): array
+    public function isAvailable(Book $book): bool
     {
-        $totalCopies = BookCopy::where('book_id', $book->id)->count();
-        $availableCopies = BookCopy::where('book_id', $book->id)
+        return $this->getAvailableCopyCount($book) > 0 && !$this->isRestricted($book);
+    }
+
+    public function getAvailableCopyCount(Book $book): int
+    {
+        $count = BookCopy::where('book_id', $book->id)
             ->where('status', 'available')
             ->where('condition', 'good')
             ->count();
 
-        $isAvailable = $availableCopies > 0 && !$book->is_blocked;
+        return $count > 0 ? $count : (int) $book->available_copies;
+    }
+
+    public function isRestricted(Book $book): bool
+    {
+        return (bool) $book->is_blocked;
+    }
+
+    public function evaluateBookStatus(Book $book): array
+    {
+        $totalCopies = BookCopy::where('book_id', $book->id)->count();
+        $availableCopies = $this->getAvailableCopyCount($book);
+        $isAvailable = $this->isAvailable($book);
 
         return [
             'book_id' => $book->id,
             'title' => $book->title,
             'is_blocked' => $book->is_blocked,
-            'total_copies' => $totalCopies,
+            'total_copies' => $totalCopies > 0 ? $totalCopies : $book->total_copies,
             'available_copies' => $availableCopies,
             'is_available_for_checkout' => $isAvailable,
         ];

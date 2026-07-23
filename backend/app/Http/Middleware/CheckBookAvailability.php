@@ -15,7 +15,7 @@ class CheckBookAvailability
         if ($bookId) {
             $book = Book::find($bookId);
             if (!$book) {
-                return response()->json(['error' => 'Book not found'], 4404);
+                return response()->json(['error' => 'Book not found'], 404);
             }
             if ($book->is_blocked) {
                 return response()->json([

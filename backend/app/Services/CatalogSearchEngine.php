@@ -2,12 +2,24 @@
 
 namespace App\Services;
 
+use App\Contracts\Services\CatalogSearchEngineInterface;
 use App\Models\Book;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
-class CatalogSearchEngine
+class CatalogSearchEngine implements CatalogSearchEngineInterface
 {
-    public function search(array $params): Builder
+    public function search(array $params, int $perPage = 15): LengthAwarePaginator
+    {
+        return $this->buildQuery($params)->paginate($perPage);
+    }
+
+    public function searchByQuery(string $query, int $perPage = 15): LengthAwarePaginator
+    {
+        return $this->search(['q' => $query], $perPage);
+    }
+
+    public function buildQuery(array $params): Builder
     {
         $query = Book::query();
 

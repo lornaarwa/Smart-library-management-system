@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\Services\QueueReservationServiceInterface;
 use App\Models\Book;
-use App\Models\Member;
-use App\Services\QueueReservationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ReservationController extends Controller
 {
-    protected QueueReservationService $reservationService;
+    protected QueueReservationServiceInterface $reservationService;
 
-    public function __construct(QueueReservationService $reservationService)
+    public function __construct(QueueReservationServiceInterface $reservationService)
     {
         $this->reservationService = $reservationService;
     }
@@ -24,10 +23,9 @@ class ReservationController extends Controller
         ]);
 
         $user = $request->user();
-        $member = Member::where('user_id', $user->id)->firstOrFail();
         $book = Book::findOrFail($validated['book_id']);
 
-        $reservation = $this->reservationService->placeHold($book, $member);
+        $reservation = $this->reservationService->reserveBook($user, $book);
 
         return response()->json([
             'message' => 'Book reservation queue hold placed successfully',

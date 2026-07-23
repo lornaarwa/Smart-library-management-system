@@ -2,11 +2,50 @@
 
 namespace App\Services;
 
+use App\Contracts\Services\BorrowLimitServiceInterface;
 use App\Models\Loan;
 use App\Models\Member;
+use App\Models\User;
 
-class BorrowLimitService
+class BorrowLimitService implements BorrowLimitServiceInterface
 {
+    public function canBorrow(User $user): bool
+    {
+        $member = Member::where('email', $user->email)->first();
+        if (!$member) {
+            return true;
+        }
+
+        $res = $this->canMemberBorrow($member);
+        return $res['can_borrow'];
+    }
+
+    public function getActiveLoansCount(User $user): int
+    {
+        $member = Member::where('email', $user->email)->first();
+        if (!$member) {
+            return 0;
+        }
+
+        return Loan::where('member_id', $member->id)->where('status', 'active')->count();
+    }
+
+    public function getRemainingQuota(User $user): int
+    {
+        $member = Member::where('email', $user->email)->first();
+        if (!$member) {
+            return 3;
+        }
+
+        $res = $this->canMemberBorrow($member);
+        return $res['remaining_slots'];
+    }
+
+    public function getBorrowLimitForTier(string $tier): int
+    {
+        return $this->getTierLimit($tier);
+    }
+
     public function getTierLimit(string $membershipTier): int
     {
         return match ($membershipTier) {
