@@ -2,16 +2,43 @@
 
 namespace App\Services;
 
+use App\Contracts\Services\AuthSessionServiceInterface;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 
-class AuthSessionService
+class AuthSessionService implements AuthSessionServiceInterface
 {
     protected string $secret;
 
     public function __construct()
     {
         $this->secret = config('app.key', 'secret-key-32-chars-long-placeholder');
+    }
+
+    public function createSessionToken(User $user): string
+    {
+        return $this->generateToken($user);
+    }
+
+    public function validateSessionToken(string $token): ?User
+    {
+        $payload = $this->validateToken($token);
+        if (!$payload || !isset($payload['sub'])) {
+            return null;
+        }
+
+        return User::find($payload['sub']);
+    }
+
+    public function invalidateSessionToken(string $token): bool
+    {
+        $this->blacklistToken($token);
+        return true;
+    }
+
+    public function getAuthenticatedUser(string $token): ?User
+    {
+        return $this->validateSessionToken($token);
     }
 
     public function generateToken(User $user): string
