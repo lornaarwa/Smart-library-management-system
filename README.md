@@ -1,59 +1,116 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Smart Library Management System (SmartLib)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+SmartLib is a production-grade, full-stack library management system featuring a **Laravel REST API** backend and a **React SPA** frontend. The platform handles digital/physical catalog searches (OPAC), barcode circulation, custom borrowing limits, Safaricom M-Pesa Daraja fine payments, and features an OpenAI-powered AI Assistant Chatbot.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Key Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Online Public Access Catalog (OPAC)**: Fully searchable public book browser with filterable attributes (Genre, Author, ISBN).
+- **Interactive Dashboards**:
+  - **Admin**: System metrics, PostgreSQL database health status, and user suspension controls.
+  - **Librarian**: Barcode scanner checkout desk, return handling, manual overrides, and borrowing limits configurator.
+  - **Member**: Personal active checkouts, hold queue tracking, overdue alerts, and fine statements.
+- **M-Pesa Daraja STK Push Integration**: Fast, automated payment of outstanding library fines directly through Safaricom API.
+- **SmartLib AI Librarian**: Context-aware floating assistant chatbot providing automated book suggestions.
+- **Complete Middleware Stack**: 14 custom middlewares monitoring role routing, token budgets, borrow limits, and API throttling.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Tech Stack & Architecture
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Backend (Laravel 12 / PHP 8.2)
+- **ORM**: Eloquent
+- **Database**: PostgreSQL (or SQLite local fallback)
+- **Auth**: JWT (JSON Web Token) encoding/decoding and blacklisting
+- **Object Storage**: Cover images and digital PDF book files
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Frontend (React 18 / Vite 7)
+- **Styling**: Vanilla CSS and custom Tailwind
+- **Icons**: Lucide React
+- **API Client**: Axios
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 📂 Core Directory Structure
 
-### Premium Partners
+```text
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/          # Auth, Inventory, Loan, Fine, AI Chatbot Controllers
+│   │   └── Middleware/           # 14 custom middlewares (IP, JWT, Banned, Fines limit, etc.)
+│   ├── Models/                   # 10 DB Models (Book, BookCopy, Member, Reservation, etc.)
+│   ├── Providers/                # 6 Custom Service Providers (Daraja, OpenAI Chat, Search Engine)
+│   └── Services/                 # 9 Domain Services (Token Bucket, Catalog Search, Queue sequencing)
+├── database/
+│   ├── migrations/               # Database tables schema definition
+│   └── seeders/                  # Test seeder with dummy catalog & student records
+├── resources/
+│   ├── css/                      # Custom Plus Jakarta Sans styling
+│   ├── js/                       # React SPA src directory
+│   │   ├── components/           # Navbar, Footer, BookCard, DarajaModal, ChatbotWidget
+│   │   ├── context/              # AuthStateContext and session persistence
+│   │   └── pages/                # PublicCatalog, Member, Librarian, Admin, Login Dashboards
+│   └── views/app.blade.php       # Single blade template rendering the React app
+├── routes/
+│   ├── api.php                   # All REST API endpoints (V1)
+│   └── web.php                   # Single Page App layout fallback routing
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## 🔒 Custom Middleware Stack (14 Middlewares)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Middleware | Description |
+| :--- | :--- |
+| **`EnsureIsLibrarian`** | Restricts Librarian/Admin dashboards to authorized personnel only. |
+| **`EnsureHasAccount`** | Blocks unauthenticated users from dashboard resources. |
+| **`ValidateBorrowLimit`** | Enforces maximum active checkouts based on membership tier. |
+| **`CheckBookAvailability`** | Restricts checkouts for administratively locked books or out-of-stock items. |
+| **`CheckReservationAvailability`** | Prevents duplicate holds on the same title by a member. |
+| **`JwtTokenValidation`** | Decodes and validates bearer session JWT signatures. |
+| **`ThrottleRequests`** | Limits API request frequency to prevent DDoS (429 handling). |
+| **`IpRateLimiter`** | Extra IP-based traffic limiter active in production. |
+| **`Cors`** | Enforces allowable API cross-origin requests. |
+| **`TrustProxies`** | Assures trusted reverse proxies like Cloudflare. |
+| **`ApiGatewayProxy`** | Downstream gateway microservice header router. |
+| **`CheckBannedStatus`** | Restricts suspended library accounts from logging in. |
+| **`CheckFineAmount`** | Restricts checkouts if outstanding fines exceed KES limit. |
+| **`ChatbotCostLimiter`** | Restricts daily AI token usage per user to protect API quotas. |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## ⚡ Setup & Installation
 
-## Security Vulnerabilities
+### Prerequisites
+- PHP 8.2+
+- Composer
+- Node.js & npm
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Backend Configuration
+1. Clone the repository and install dependencies:
+   ```bash
+   composer install
+   ```
+2. Copy environment configuration:
+   ```bash
+   cp .env.example .env
+   ```
+3. Set up the database:
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Frontend Configuration
+1. Install Node modules:
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+2. Build assets for production:
+   ```bash
+   npm run build
+   ```
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
