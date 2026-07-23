@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Contracts\Services\AuthSessionServiceInterface;
 use App\Services\AuthSessionService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -10,9 +11,8 @@ class AuthServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(AuthSessionService::class, function () {
-            return new AuthSessionService();
-        });
+        $this->app->singleton(AuthSessionServiceInterface::class, AuthSessionService::class);
+        $this->app->singleton(AuthSessionService::class, AuthSessionService::class);
     }
 
     public function boot(): void
