@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\Services\BorrowLimitServiceInterface;
 use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Fine;
 use App\Models\Loan;
 use App\Models\Member;
 use App\Models\Reservation;
-use App\Services\BorrowLimitService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class LibrarianDashboardController extends Controller
 {
-    protected BorrowLimitService $borrowLimitService;
+    protected BorrowLimitServiceInterface $borrowLimitService;
 
-    public function __construct(BorrowLimitService $borrowLimitService)
+    public function __construct(BorrowLimitServiceInterface $borrowLimitService)
     {
         $this->borrowLimitService = $borrowLimitService;
     }
