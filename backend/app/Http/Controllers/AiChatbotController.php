@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\Services\OpenAiRecommendationServiceInterface;
 use App\Models\AiUsageLog;
 use App\Models\ChatSession;
 use App\Models\Member;
-use App\Services\OpenAiRecommendationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AiChatbotController extends Controller
 {
-    protected OpenAiRecommendationService $aiService;
+    protected OpenAiRecommendationServiceInterface $aiService;
 
-    public function __construct(OpenAiRecommendationService $aiService)
+    public function __construct(OpenAiRecommendationServiceInterface $aiService)
     {
         $this->aiService = $aiService;
     }
