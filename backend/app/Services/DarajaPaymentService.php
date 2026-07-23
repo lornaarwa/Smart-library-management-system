@@ -2,11 +2,12 @@
 
 namespace App\Services;
 
+use App\Contracts\Services\DarajaPaymentServiceInterface;
 use App\Models\Fine;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class DarajaPaymentService
+class DarajaPaymentService implements DarajaPaymentServiceInterface
 {
     protected string $consumerKey;
     protected string $consumerSecret;
