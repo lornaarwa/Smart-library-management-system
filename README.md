@@ -4,7 +4,7 @@ SmartLib is a production-grade, full-stack library management system featuring a
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 - **Online Public Access Catalog (OPAC)**: Fully searchable public book browser with filterable attributes (Genre, Author, ISBN).
 - **Interactive Dashboards**:
@@ -17,7 +17,7 @@ SmartLib is a production-grade, full-stack library management system featuring a
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## Tech Stack & Architecture
 
 ### Backend (Laravel 12 / PHP 8.2)
 - **ORM**: Eloquent
@@ -32,7 +32,7 @@ SmartLib is a production-grade, full-stack library management system featuring a
 
 ---
 
-## 📂 Core Directory Structure
+##  Core Directory Structure
 
 ```text
 ├── app/
@@ -59,7 +59,7 @@ SmartLib is a production-grade, full-stack library management system featuring a
 
 ---
 
-## 🔒 Custom Middleware Stack (14 Middlewares)
+##  Custom Middleware Stack (14 Middlewares)
 
 | Middleware | Description |
 | :--- | :--- |
@@ -80,7 +80,7 @@ SmartLib is a production-grade, full-stack library management system featuring a
 
 ---
 
-## ⚡ Setup & Installation
+##  Setup & Installation
 
 ### Prerequisites
 - PHP 8.2+
