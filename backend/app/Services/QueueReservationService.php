@@ -2,12 +2,45 @@
 
 namespace App\Services;
 
+use App\Contracts\Services\QueueReservationServiceInterface;
 use App\Models\Book;
 use App\Models\Member;
 use App\Models\Reservation;
+use App\Models\User;
 
-class QueueReservationService
+class QueueReservationService implements QueueReservationServiceInterface
 {
+    public function reserveBook(User $user, Book $book): Reservation
+    {
+        $member = Member::where('user_id', $user->id)->first() ?? Member::where('email', $user->email)->first();
+        if (!$member) {
+            $member = Member::create([
+                'user_id' => $user->id,
+                'member_number' => 'MEM-' . rand(1000, 9999),
+                'membership_tier' => 'student',
+                'is_banned' => false,
+            ]);
+        }
+
+        return $this->placeHold($book, $member);
+    }
+
+    public function cancelReservation(Reservation $reservation): bool
+    {
+        $reservation->status = 'cancelled';
+        return $reservation->save();
+    }
+
+    public function getQueuePosition(Reservation $reservation): int
+    {
+        return (int) $reservation->queue_position;
+    }
+
+    public function processNextInQueue(Book $book): ?Reservation
+    {
+        return $this->fulfillNextReservation($book);
+    }
+
     public function placeHold(Book $book, Member $member): Reservation
     {
         $lastPosition = Reservation::where('book_id', $book->id)
