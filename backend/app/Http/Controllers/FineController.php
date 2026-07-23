@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\Services\DarajaPaymentServiceInterface;
 use App\Models\Fine;
-use App\Services\DarajaPaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class FineController extends Controller
 {
-    protected DarajaPaymentService $darajaService;
+    protected DarajaPaymentServiceInterface $darajaService;
 
-    public function __construct(DarajaPaymentService $darajaService)
+    public function __construct(DarajaPaymentServiceInterface $darajaService)
     {
         $this->darajaService = $darajaService;
     }
