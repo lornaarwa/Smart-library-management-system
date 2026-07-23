@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\Services\AuthSessionServiceInterface;
 use App\Models\Member;
 use App\Models\User;
-use App\Services\AuthSessionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    protected AuthSessionService $authSessionService;
+    protected AuthSessionServiceInterface $authSessionService;
 
-    public function __construct(AuthSessionService $authSessionService)
+    public function __construct(AuthSessionServiceInterface $authSessionService)
     {
         $this->authSessionService = $authSessionService;
     }

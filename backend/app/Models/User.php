@@ -52,4 +52,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Member::class);
     }
+
+    public function librarian()
+    {
+        return $this->hasOne(Librarian::class);
+    }
 }
