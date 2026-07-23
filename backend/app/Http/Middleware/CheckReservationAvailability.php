@@ -14,17 +14,20 @@ class CheckReservationAvailability
         $bookId = $request->input('book_id');
         $user = $request->user();
 
-        if ($bookId && $user && $user->member) {
-            $existingHold = Reservation::where('book_id', $bookId)
-                ->where('member_id', $user->member->id)
-                ->whereIn('status', ['pending', 'ready_for_pickup'])
-                ->first();
+        if ($bookId && $user) {
+            $member = $user->member ?? \App\Models\Member::where('user_id', $user->id)->first();
+            if ($member) {
+                $existingHold = Reservation::where('book_id', $bookId)
+                    ->where('member_id', $member->id)
+                    ->whereIn('status', ['pending', 'ready_for_pickup'])
+                    ->first();
 
-            if ($existingHold) {
-                return response()->json([
-                    'error' => 'Duplicate Reservation',
-                    'message' => 'You already have an active hold or reservation queue spot for this book.'
-                ], 409);
+                if ($existingHold) {
+                    return response()->json([
+                        'error' => 'Duplicate Reservation',
+                        'message' => 'You already have an active hold or reservation queue spot for this book.'
+                    ], 409);
+                }
             }
         }
 
